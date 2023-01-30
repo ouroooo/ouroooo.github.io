@@ -25,7 +25,8 @@ swal('Welcome','欢迎\n\n','success');
 
     <p><h3 class=hua>温故而知新，可以为师矣.</h3></p>
        <p><h2>欢迎</h2></p>
- <script type="text/javascript">
+      <div class="custom"> 
+				<div class="box"> <font><span id="runtime_span"></span> <script type="text/javascript">
 							function show_runtime(){
 								window.setTimeout("show_runtime()", 1000);
 								X = new								Date("@8/28/2022 22:13:59");
@@ -41,8 +42,9 @@ swal('Welcome','欢迎\n\n','success');
 								D = Math.floor((c - C) * 60);
 							runtime_span.innerHTML ="本站已运行: " + A + "天" + B + "小时" + C + "分" + D + "秒"}
 							show_runtime();
-						</script>
-
+						</script> <span id="span_dt"></span> </font> 
+				</div> 
+			</div> 
        <p class=f><a href="https://ouroooo.github.io">
       <input type=button value=刷新 class=anu></a></p>
 
