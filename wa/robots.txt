@@ -1,0 +1,2 @@
+# robots.txt generated at https://www.kljs6.com/ 
+Sitemap: https://www.kljs6.com/sitemap.xml
