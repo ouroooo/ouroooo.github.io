@@ -1,94 +1,541 @@
-iOURO | 欢迎页
-<!doctype html>
-<html lang="en"> 
-	<head> 
-		<meta charset="utf-8"> 
-		<meta name="viewport" content="width=100%, initial-scale=1"> 
-		<title>✨iOURO</title> 
-		 
-		<meta name="keywords" content="iOURO弈知新"> 
-		<meta name="description" content=""> <!--字体图标样式--> 
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/solid.css"> 
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/fontawesome.css"> 
-		<link rel="stylesheet" href="css/style.css"> 
-		<script src="js/jquery.min.js" defer></script> 
-		<script src="js/index.js" defer></script> 
-     
-	</head> 
-	<body> 
-<script src="min.js"></script>
-<script>
-swal('抱歉','因为css冲突，导致播放器按钮重叠，您可通过点击播放器右下角三杠打开歌单进行切换歌曲\n\n','success');
-</script>
-		<div class="box ju"> 
-			<h4> <font class="admin"><i></i><a href="https://ouroooo.github.io"target="_blank">欢迎来到iOURO</a></font> 
-				<div>
-					 welcome to iOURO. 
-				</div> </h4> 
-		</div> 
-		<div id="content"> 
-			<div class="ti"> 
-				<img class="img" src="https://q1.qlogo.cn/headimg_dl?dst_uin=2559275568&spec=100"> 
-				
-			</div> 
-			<div id="hitokoto"> 
-				<script>
-					hitokoto()
-				</script> 
-			</div> 
-			<div class="custom"> 
-				<div class="box"> <font><span id="runtime_span"></span> <script type="text/javascript">
-							function show_runtime(){
-								window.setTimeout("show_runtime()", 1000);
-								X = new								Date("@8/29/2022 00:00:00");
-								Y = new Date();
-								T = (Y.getTime() - X.getTime());
-								M = 24 * 60 * 60 * 1000;
-								a = T / M;
-								A = Math.floor(a);
-								b = (a - A) * 24;
-								B = Math.floor(b);
-								c = (b - B) * 60;
-								C = Math.floor((b - B) * 60);
-								D = Math.floor((c - C) * 60);
-							runtime_span.innerHTML ="运行: " + A + "天" + B + "小时" + C + "分" + D + "秒"}
-							show_runtime();
-						</script> <span id="span_dt"></span> </font> 
-				</div> 
-			</div> 
-			<div class="box-box"> 
-				<div class="box">
-					 
-					<a href="https://ouroooo.github.io/wa"target="_blank">进入主页</a>
-				</div> 
-			</div> 
-			<div class="main"> 
-				<div class="main-1"> 
-					<div class="box"> <a href="./"> <img class="img" src="https://ouroooo.github.io/img/fjj.png"> </a> 
-						<div class="boxbox"> 
-							<center> 
-								<font class="admin"><i></i><a href="https://ouroooo.github.io/oapp"target="_blank">知新博客</a></font>
-							</center> 
-						</div> 
-					</div> 
-				</div> 
-			<div class="main-2"> 
-					<div class="box ju"> 
-						<h4> <font class="izuobiao"><i></i><a href="./"></a></font> 
-							<div>
-								 
-							</div> </h4> 
-					</div> 
-					<div class="box ju"> 
-						<h4> <font class="newgithub"><i></i><a href="https://music.xfyun.club/index/home/index.html"target="_blank">音乐播放器</a></font> 
-					
-					</div> 
-					<div class="box ju"> 
-							
-									<h4> <font class="newweb"><i></i><a href="https://github.com/ouroooo"target="_blank">我的Github</a></font>
-								
-			
+
+<html lang="zh-CN">
+<!--
+	…o888888o.o88888888o.
+…8888888888888888888888888o.
+…888::::888888888888888888888888o.
+…88::::::::88888888888888888888888888o.
+…o8:::::::::888::顶88888888888888888888888.
+…8888:8::::::8:::::::::顶88888888888888888888.
+…8888::::8888::::::::::::::::顶88888888888 ‘’’‘88
+…8888:::888888888::::::::::::::::顶888888888 8
+…88.88888888888888888:::::::::::::顶88888888888
+…88…888888888888888888:::::::::::顶88888888888888
+…88.888888888888888888888::::::::顶88888888888888888
+…8…8888888888888888888888::::::顶88888888888888888888
+…8888888888888888::88888:::::顶8888888888888888888888
+…88888888888888888::::8888::::8888888888888888 ‘’’‘8888
+…88888888888888888::::8888::::::88888::888888888 888
+…88888888888888888::::888:::::顶::::::888888888 88
+…888888888888888888::::88::::::顶:::::::::::::888888888 88
+.8888888888888888888::::8::::::顶:::::::::::::顶888888888 88
+888…8888888888::88::::8:::::顶:::8oo8::::::88888888888888 8
+88…88888888888:::8:::::::::顶:::::::::::::88888888888888888
+.8…8888888888888:::::::::::顶::“8888888”:::顶88888888888888888
+…8888888888::888::::::::::顶:::::“8a8”::::顶88888888888888888888
+.888888888:::::88:::::::::顶88::::::::::::顶88888888888888888888888
+8888888888:::::8:::::::::顶88888::::::::顶888888888888888888888888888
+888888888:::::8:::::::::顶8888888ooooo顶8888888888888888888888888888888
+888888.顶::::::::::::::顶8888888888::::::顶8888888888888888 ‘’’‘888888888
+8888…顶:::::::::::::::顶88888888888::::::顶8888888888888888 88888888
+.888…顶::::::::::::::顶8888888888888:::::::顶888888888888888 888888
+…888.顶:::::::::::::顶88888888888888888::::::顶8888888888888 88888
+…88.顶:::::::::::::8888:88888888888888888:::::顶顶888888888 8888
+…88.顶:::::::::::8888顶::88888::888888888888:::::顶顶88888 888
+…8…顶::::::::::8888顶:::8888:::::88888888888::::::顶顶88 888
+…8顶:::::::8888顶:::::888:::::::88:::8888888:::::::顶顶 88
+…88顶:::::::8888顶::::::88:::::::::8:::::888888::::::::顶顶 88
+…8888顶:::::888顶:::::::::88::::::::::顶::::8888::::::::::::顶 8
+…88888:顶::::888顶::::::::::8:::::::::::顶::::888::::::::::::::顶
+…88.888:顶:::888:顶::::::::::8::::::::::::顶::888::::::::::::::::顶
+…8.88888顶:::88::顶::::::::::::::::::::::::顶:88::::::::::::::::::顶
+…88888顶:::88::顶:::::::::::::::::::::::::顶88:::::::::::::::::::顶
+…88888顶:::88::顶:::::::::::::::::::::::::顶:8::::::::::::::::::::顶
+…888888顶::::8::顶::::::::::::::8888::::::::顶8::::::::::::8888:::::顶
+…88888…顶:::8::顶顶:::::::::::888888:::::::顶::::::::::::888888::::顶
+…8888…顶顶:::::顶顶::::::::::888888:::::::顶顶::::::::::888888::::顶
+…8888…顶:::::::顶顶::::::::::8888:::::::顶顶顶::::::::::8888::::顶’’’’
+…888…顶顶::::::顶顶顶:::::::::::::::::顶顶::顶::::::::::::::::顶’’’’
+…88…顶::::::::顶顶顶顶:::::::::::顶顶顶:::顶顶:::::::::::::顶’’’’
+…88…顶顶:::::::::顶顶顶顶顶顶顶顶顶顶:::::::顶顶顶顶
+…88…顶顶::::::::::::顶顶顶顶顶顶顶::::::::::::顶顶
+…88…8顶顶::::::::::::::::::::::::::::::::::::::::顶
+…8…88顶顶::::::::::::::::::::::顶:::顶::::::::::顶
+…888顶顶::::::::::::::::::顶顶::::::顶顶::::::顶
+…88888顶顶:::::::::::::::顶顶顶:::::::顶顶:::::顶
+…888888顶顶:::::::::::::顶顶顶:::::::::顶顶:::顶
+…88888888顶顶:::::::::::顶顶顶:::::::::::顶:::顶
+…88.8888888.顶::::::::顶顶顶::::::::::::::顶::顶
+…8…888888…顶::::::顶顶:::::::::::::::::顶::顶
+…888888…顶:::::顶:::::::::::::::::::顶::顶顶
+…888888…顶::::顶::::::::::::::::::::::::顶顶
+…888888…顶::::顶::::::::::::::::::::::::顶:顶
+…88888…顶::::::::::::::8::::::::::::::::顶::顶
+…88888…顶:::::::::::::::88::::::::::::::::顶::顶
+…88888…顶::::::::::::::::8::::::::::::::::::顶::顶
+…88888…顶:::::顶:::::::::::::::::::::顶::::::::顶::顶
+…8888…顶:::::顶:::::::::::::::::::::::顶顶::::::顶::顶
+…8888…顶:::::顶:::::::::::::::::::::::顶顶顶:::::::顶:顶
+…888…顶:::::顶顶::::::::::::::::::::::顶顶顶::::::::顶:顶
+…顶::::::顶顶:::::::::::::::::::::顶顶顶::::::::: 顶:顶
+…顶:::::顶:::::::::::::::::::::::顶顶::::::::::::::顶:顶
+…顶::::::::::::::::::::::::::::::顶::::::::::::::::::顶:顶
+…顶::::::::::::::::::::::::::::::::::::::::::::::::::顶:顶
+…顶::::::::顶:::::::::::::::::::::::::::::::::::::::::顶:顶
+…顶::::::::顶:::::::::::::::::顶::::::::::::::::::::::顶:顶
+…顶::::::::::顶::::::::::::::顶::::::::::::::::::::::::顶:顶顶
+…顶:::::::::::顶8::::::::8:顶:::::::::::::::::::::::::顶:顶顶p
+…顶::::::::::::888hole888顶:::::::::::::::::::::::::::顶:顶o
+…顶:::::::::::::88888888顶:::::::::::::::::::::::::::顶:顶p
+…顶::::::::::::::888888顶::::::::::::::::::::::::::::顶:顶
+…顶:::::::::::::::88888顶:::::::::::::::::::::::::::顶:顶
+…顶:::::::::::::::::88顶::::::::::::::::::::::::::::顶顶
+…顶:::::::::::::::::::顶:::::::::::::::::::::::::::顶顶
+…顶:::::::::::::::::::顶::::::::::::::::::::::::::顶顶
+…顶:::::::::::::::::顶::::::::::::::::::::::::::顶顶
+…顶:::::::::::::::::顶::::::::::::::::::::::::::顶
+…顶:::::::::::::::顶::::::::::::::::::::::::::顶
+…顶:::::::::::::::顶:::::::::::::::::::::::::顶
+…顶:::::::::::::顶:::::::::::::::::::::::::顶
+…顶:::::::::::::顶:::::::::::::::::::::::顶
+…顶:::::::::::顶:::::::::::::::::::::::顶
+…顶:::::::::::顶::::::::::::::::::::::顶
+…顶:::::::::顶::::::::::::::::::::::顶
+…顶:::::::::顶:::::::::::::::::::::顶
+…顶:::::::顶:::::::::::::::::::::顶
+…顶::::::顶::::::::::::::::::::顶
+…顶:::::顶::::::::::::::::::::顶
+…顶:::顶::::::::::::::::::::顶
+…顶::顶::::::::::::::::::::顶
+…顶:顶:::::::::::::::::::顶
+…顶顶:::::::::::::::::::顶
+…顶顶::::::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶:::::顶::::::::顶顶
+…顶顶::::顶顶:::::::顶顶
+…顶顶::::::顶顶:::::顶顶
+…顶顶::::::::::::::顶顶
+…顶顶::::顶:::::::::顶顶
+…顶顶::顶顶顶:::::::顶顶
+…顶顶::顶顶顶:::::::顶顶
+…顶顶:::顶顶::::::::::顶
+…顶顶::顶顶::::::::::顶
+…顶顶::顶顶:::::::::::顶
+…顶顶:::顶::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶::::::::::::::::::顶
+…顶顶::::::::::::::::::顶
+…顶顶::::::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶:::::::::::::::顶
+…顶顶:::::::::::::::顶
+…顶顶:::::::::::::::顶
+…顶顶::::::::::::::顶
+…顶顶:::::::::::::顶
+…顶顶:::::::::::::顶
+…顶顶:::::::::::::顶
+…顶顶::::::::::::顶
+…顶顶::::::::::::顶
+…顶顶:::::::::::顶
+…顶顶::::::::::顶
+…顶顶::::::::::顶
+…顶顶::::::::顶
+…顶顶::::::::顶
+…顶顶::::::::顶
+…顶顶:::::::顶
+…顶顶:::::::顶
+…顶顶::::::顶
+…顶顶::::::顶
+…顶顶::::::顶
+…顶顶::::::顶
+…顶顶::::::顶
+…顶顶::::::顶
+…顶顶:::::::顶
+…顶:顶::::::::顶
+…顶:顶:::::::::顶
+…顶:顶::::::::::顶
+…顶:顶:::::::::::顶
+…顶:顶::::::::::::顶
+…顶:顶:::::::::::::顶
+…顶:顶::::::::::::::顶
+…顶顶:::::::::::::::::顶
+…顶顶::::::::::::::::顶
+…顶顶顶:::::::::顶顶
+…顶顶::顶::::顶顶
+…顶顶顶顶顶顶顶
+…顶顶顶顶顶
+--><head> 
+    <meta charset="utf-8">
+
+  <meta name="viewport" content="initial-scale=0.9, maximum-scale=1.0, minimum-scale=0.9, user-scalable=0, width=device-width">
+    
+
+    <meta itemprop="name" content="iOURO丨导航">
+
+ 
+<meta itemprop="image" content="https://q1.qlogo.cn/headimg_dl?dst_uin=149749000&spec=100" />
+<meta name="description" itemprop="description" content="向日葵在没有太阳的晚上，还有谁向它伸出手。" />
+ 
+
+   
+	<meta name="keywords" content="iOURO导航">
 	
-	<script src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
-<script id="xplayer" src="https://player.xfyun.club/Static/player/player.js" key="63d67e7494881" m = "1"></script>					
-	 </body>
+	<meta name="description" content=""既然不懂什么是珍惜，那么我教你，从失去开始。"">
+    <title>
+iOURO | 首页       
+    </title>
+ 
+    <meta property="og:type" content="website">
+
+    <meta property="og:url" content="https://ouroooo.github.io/">
+
+    <meta property="og:image" content="https://github.com/ouroooo/iouro.github.io/raw/master/img/favicon.ico">
+
+    <meta property="og:title" content="iOURO | 导航">
+
+    <meta property="og:description" content="iOURO | 导航">
+
+    <link rel="canonical" href="https://ouroooo.github.io/">
+
+    <link rel="shortcut icon" href="https://github.com/ouroooo/iouro.github.io/raw/master/img/favicon.ico">
+
+    <link rel="bookmark" href="https://github.com/ouroooo/iouro.github.io/raw/master/img/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://q1.qlogo.cn/headimg_dl?dst_uin=2559275568&spec=100">
+    <link rel="stylesheet" href="./style.css" media="screen" type="text/css">
+    <script src="./script.js" type="text/javascript"></script>
+    
+    
+    
+    
+    
+    
+    
+ <!-----------------------------------------测试-------------------------------------------------->
+ 
+
+
+
+<script>
+	jQuery(document).ready(function() {
+	var QRBox	=	$('#QRBox');
+	var MainBox	=	$('#MainBox');
+	var AliPayQR	=	'';
+	var WeChanQR	=	'';
+	var QQQR     	=	"";
+
+	
+
+	function showQR(QR) {
+		if (QR) {
+			MainBox.css('background-image','url('+QR+')');
+		}
+		$('#DonateText,#donateBox,#github').addClass('blur');
+		QRBox.fadeIn(300,function(argument) {
+			MainBox.addClass('showQR');
+		});
+	}
+
+	$('#donateBox>li').click(function(event) {
+		var thisID	=	$(this).attr('id');
+	if (thisID === 'AliPay') {
+			showQR(AliPayQR);
+		} else if (thisID === 'WeChat') {
+			showQR(WeChanQR);
+		} else if (thisID === 'QQ') {
+			showQR(QQQR);
+		
+		}
+	});
+
+	MainBox.click(function(event) {
+		MainBox.removeClass('showQR').addClass('hideQR');
+		setTimeout (function(a) {
+			QRBox.fadeOut(300,function(argument) {
+				MainBox.removeClass('hideQR');
+			});
+			$('#DonateText,#donateBox,#github').removeClass('blur');
+		},600);
+
+	});
+});
+</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?167b072863fc77dc4269cdfa743df7b0";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+   <style>
+        .zuobiao i {
+            line-height: 1.8;
+            margin-right: 6px;
+            vertical-align: middle;
+            background-image: url(./zuobiao.svg);
+            background-size: 100%;
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            margin-top: -2px;
+        }
+       
+    </style>
+    <style>
+     .user-warp img {
+            width:70px;
+            border-radius:100%;
+           }
+	    
+/*.dark-theme .user-warp img {
+            width:70px;
+            border-radius:100%;
+            animation: light 5s ease-in-out infinite;
+            transition: 0.5s;}*/
+
+
+	
+	    @keyframes light {
+ 0%{box-shadow: 0 0 4px #f00;}
+ 25%{box-shadow: 0 0 5px #0f0;} 
+ 50%{box-shadow: 0 0 4px #00f;}
+ 75%{box-shadow: 0 0 5px #0f0;} 
+ 100%{box-shadow: 0 0 4px #f00;}
+}
+      </style>
+
+</head>
+
+<body>
+	 
+<div class="wrapper">
+<header>
+    <nav class="navbar" id="mobile-toggle-theme">
+        <div class="container"></div>
+    </nav>
+
+    <!------------------------------------------------------------------------------------------->
+    
+     
+</header> 
+
+    <div class="main">
+
+        <div class="container">
+            <div class="intro" style=" line-height: 50px">
+                <div class="user-warp img"><img src="https://q2.qlogo.cn/headimg_dl?dst_uin=2559275568&amp;spec=100" alt="iOURO | 导航"></div>
+                <div class="nickname">iOURO | 导航</div>
+                <div class="description">
+                    <p>“既然不懂什么是珍惜，那么我教你，从失去开始”</p>
+
+                </div>
+
+
+                <div class="zuobiao">
+                    <i class="ico_map"></i>中国 · 广东
+                    <span style="margin-left: 30px">
+                            <input id="switch_default" type="checkbox" class="switch_default">
+                            <label for="switch_default" class="toggleBtn"></label></span>
+                </div>
+
+
+                
+                <div class="menu navbar-right links">
+
+                    <!-- 获取页面列表 -->
+
+                    <a class="menu-item" href="https://ouroooo.github.io/wa/apk">
+                    apk下载站</a> · 
+
+
+                    <a href="https://ouroooo.github.io/wa/ipa">
+
+                      ipa下载站                        
+                    </a> · 
+
+                    
+                    <a href="https://ouroooo.github.io/exe">
+
+                      Windows应用下载                        
+                    </a> 
+                    
+                    <p><a href="https://ouroooo.github.io">
+                      首页
+                    </a></p>
+                   
+                    
+                    
+
+<center>
+
+<div id="header">
+</div>
+<div id="main">
+	<div class="demo">
+		
+		
+		
+        <div id="player3" class="aplayer">
+            <pre class="aplayer-lrc-content">
+                
+
+               
+[00:00.00] 作词 : 弈·知新
+[00:00.02] 作曲 : 弈·知新
+[00:00.04] 编曲 : 弈·知新
+[00:00.06]“只要有爱距离算什么，有在乎时间算什么”
+[00:01.50]我能习惯远距离，
+[00:04.65]爱总是身不由己，
+[00:09.27]宁愿换个方式至少还能，
+[00:14.55]遥远爱着你，
+[00:17.58]爱能克服远距离，
+[00:21.87]多远都要在一起，
+[00:26.25]我已经不再存在你的心里，
+[00:32.61]就让我独自守着回忆，
+[00:36.96]如果阳光永远都炽热，
+[00:41.28]如果彩虹不会掉颜色，
+[00:45.30]你能不能不离开呢，
+[00:54.15]我能习惯远距离，
+[00:58.47]爱总是身不由己，
+[01:03.12]宁愿换个方式至少还能，
+[01:08.37]遥远爱着你，
+[01:11.37]爱能克服远距离，
+[01:15.72]多远都要在一起，
+[01:20.01]你已经不再存在我世界里，
+[01:26.49]请不要离开我的回忆
+ 
+            </pre>
+        </div>
+	</div>
+</div>
+<script>
+	var ap3 = new APlayer({
+		element: document.getElementById('player3'),//样式1
+		narrow: false,
+		autoplay: false,
+		showlrc: true,
+		music: {
+			title: '多远也要在一起0.8',
+			author: '弈知新',
+			url: './aiduo.mp3',
+			pic: 'tm.png'
+		}
+	});
+	ap3.init();
+</script>
+
+	</center>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+ 
+ 
+ 
+ 
+ 
+    <!------------------------------------------------------------------------------------------->
+    
+   
+
+
+
+
+
+	<!------------------------------------------------------------------------------------------->
+                </div>
+	           <div style=" line-height: 20px;font-size: 9pt;">
+                    <p>"本站资源均收集整理于互联网，其著作权归原作者所有，如果有侵犯您权利的资源，请来信告知至ouroooo@163.com，我们将及时撤销相应资源"</p>
+                        <p style="margin-left: 8rem;font-size: 8pt;"><small>—— izx</small></p>
+			
+			
+                </div>
+                
+        <br>
+                 <center>
+	
+	<div id="QRBox" class="pos-f left-100">
+		<div id="MainBox"></div>
+	</div>
+</center>
+
+                
+            </div>
+            
+            
+        </div>
+
+</div>
+
+<footer id="footer" class="footer">
+         	
+		 <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+    
+    	<!------------------------------------------------------------------------------------------->
+		
+	
+	
+</footer>
+
+</div>
+
+<script type="text/javascript">document.write(unescape("%3Cspan id='cnzz_stat_icon_1279319363'%3E%3C/span%3E%3Cscript src='https://v1.cnzz.com/z_stat.php%3Fid%3D1279319363' type='text/javascript'%3E%3C/script%3E"));</script>
+</body>
+
+</html>
