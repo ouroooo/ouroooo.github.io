@@ -1,0 +1,841 @@
+/*0我的分数*/
+var bodyWidth = window.screen.width;
+var nowwidth = bodyWidth * 4 / 15;
+
+function myScore(json, studentReportShowType) {
+	/*我的分数--饼状图*/
+	var header = document.getElementById('header');
+	header.innerHTML = '';
+	var score = null;
+	var total = null;
+	var insertDate = null;
+	var appealDealDate = null;
+	var title = '';
+	var showStr = '';
+	var dengji = '';
+
+	if (null != json) {
+		score = json[1];
+		total = json[2];
+		insertDate = json[14];
+		appealDealDate = json[15];
+		dengji = json[16];
+		switch (studentReportShowType) {
+			case '2':
+				title = '全科总分';
+				showStr = json[1];
+				break;
+			case '0':
+				showStr = Math.round(json[1] * 100.0 / json[2], 2) + '%';
+				title = '全科正确率';
+				break;
+			case '1':
+				showStr = json[16];
+				title = '全科等级';
+				break;
+		}
+	}
+	drawRing({
+		parent: header,
+		animated: true,
+		width: 2.1 * nowwidth,
+		radius: 0.9 * nowwidth,
+		arc: 0.05 * nowwidth,
+		score: score,
+		total: total,
+		insertDate: insertDate,
+		appealDealDate: appealDealDate,
+		color: ['#ffffff', '#70dbf7'],
+		textColor: '#ffffff',
+		textSize: 0.14 * nowwidth + 'px',
+		dengji: dengji,
+		showStr: showStr,
+		title: title,
+		studentReportShowType: studentReportShowType,
+		after: function() {
+			// console.timeEnd('ԃʱ');
+			//rank(json);
+		}
+	});
+}
+/*1--各科目分数*/
+function oneSubScore(json) {
+	var subjectAll = $("#two_li");
+	var html = "";
+	var showFreePaper = "1"; //隐藏免费查看答题卡
+	$.newAjax({
+		url: $.getUrl() + '/appIndex!getShowFreePaper.action',
+		dataType: 'html',
+		success: function(d) {
+			if (d == "1") {
+				showFreePaper = "0"; //显示免费查看答题卡
+			}
+		}
+	});
+	for (var i = 0; i < json.length; i++) {
+		var insertDate = json[i].insertDate;
+		var appealDealDate = json[i].ext3;
+		var illType = json[i].type;
+		var examSubStatus = json[i].source;
+
+		var totalScoreStr = ""; //单科总分
+		var fullScoreStr = ""; //单科满分
+		var fabuStr = ""; //发布状态
+		var freePaperDivStr = showFreePaper == "1" ? "<div class='freePaperDiv'>答题卡</div>" : "";
+
+		var studentReportShowItem = json[i].studentReportShowItem;
+		var dengji = json[i].dengji;
+
+		if (insertDate == null && (examSubStatus == '0')) { //未发布
+			fabuStr = '（未发布）';
+			totalScoreStr = "--";
+			fullScoreStr = "--";
+			freePaperDivStr = "";
+		} else {
+			if(json[i].jisuanType=='0'){
+				fabuStr = '（选择题预发布）';
+			}else if (insertDate != null && appealDealDate != null) { //预发布
+				var insertDateTime = new Date(insertDate);
+				var appealDealDateTime = new Date(appealDealDate + ":00:00");
+				if (insertDateTime.getTime() < appealDealDateTime.getTime()) {
+					fabuStr = '（预发布）';
+				}
+			}
+			if (studentReportShowItem == '2') {
+				fullScoreStr = insertDate == null ? "--" : (json[i].totalScore + "分");
+			}
+
+			//判断是否显示分数
+			if (illType == '2') { //正常
+				// 得分、正确率、等级
+				switch (studentReportShowItem) {
+					//得分
+					case '0':
+						totalScoreStr = json[i].totalScore?json[i].totalScore + "分" :'--';
+						break;
+					case '1':
+						//正确率
+						totalScoreStr = (insertDate == null || !json[i].totalScore) ? "--" : (Math.round(json[i].totalScore * 100.0 / json[i]
+							.fullScore, 2) + '%');
+						break;
+					case '2':
+						//dengji
+						totalScoreStr = json[i].dengji||'--';
+						break;
+				}
+			} else if (illType == '0') { //填涂缺考
+				totalScoreStr = '填涂缺考';
+			} else if (illType == '1') { //违纪
+				totalScoreStr = '违纪';
+			} else if (illType == '3' || illType == '4') { //异常得分卷||0分卷
+				totalScoreStr = '零分';
+			} else { //未考
+				totalScoreStr = '未考';
+				freePaperDivStr = "";
+			}
+		}
+		html += "<li class='mui-table-view-cell'>" +
+			"<a name='" + json[i].subjectName + "' class='sub" + json[i].subjectNum + "' subjectNum='" + json[i]
+			.subjectNum + "' examPaperNum='" + json[i].examPaperNum + "' studentReportShowItem='" + studentReportShowItem + "'>" +
+			"<div class='subjectClass' style='" + subjectcolor[i] + "'>" + json[i].subjectName.substring(0, 1) +
+			"</div>" +
+			"</a>" +
+			"<div  class='two_ul_li_div2'><span>" + totalScoreStr + "</span></div>" +
+			"<div  class='two_ul_li_div3'><span>" + fullScoreStr + "</span></div>" +
+			"<div  class='two_ul_li_div4'><span>" + fabuStr + "</span></div>" +
+			freePaperDivStr +
+			"</li>";
+	} //alert(html);
+	subjectAll.html(html);
+
+	if (showFreePaper == "0") { //不显示免费答题卡的话调整科目li的高度
+		$("#two_li li").css("height", "1.70rem");
+	}
+}
+
+
+/*2--学科均衡性(校)*/
+function percentageSchool(json) {
+
+	var barChartSchoolOption = getOptionSchool('bar');
+	var xAxisValue = [];
+	var seriesValue = [];
+	//设置值
+	/*var max=json[0].schoolRank;
+	var min=json[0].schoolRank;*/
+	for (var i = 0; i < json.length; i++) {
+		xAxisValue[i] = json[i].subjectName;
+		seriesValue[i] = json[i].schoolRank;
+		/*if(json[i].schoolRank>max){max=json[i].schoolRank;}
+		if(json[i].schoolRank<min){min=json[i].schoolRank;}*/
+	} //alert(min);alert(max);
+	/*barChartSchoolOption.yAxis[0]['min']=parseInt(min);
+	barChartSchoolOption.yAxis[0]['max']=parseInt(max)+1;*/
+	barChartSchoolOption.xAxis[0]['data'] = xAxisValue;
+	barChartSchoolOption.series[0]['data'] = seriesValue;
+	var barChartSchool = echarts.init(byId('barChartSchool'));
+	barChartSchool.setOption(barChartSchoolOption);
+}
+
+/*3--学科均衡性(区)*/
+function percentageArea(json) {
+	var barChartSchoolOption = getOptionSchool('bar');
+	var xAxisValue = [];
+	var seriesValue = [];
+	//设置值
+	for (var i = 0; i < json.length; i++) {
+		xAxisValue[i] = json[i].subjectName;
+		seriesValue[i] = json[i].areaRank;
+	}
+	barChartSchoolOption.xAxis[0]['data'] = xAxisValue;
+	barChartSchoolOption.series[0]['data'] = seriesValue;
+	var barChartSchool = echarts.init(byId('barChartArea'));
+	barChartSchool.setOption(barChartSchoolOption);
+}
+/*3.1--学科均衡性校*/
+function percentageSchoolAndArea(json) {
+	var radarChartOption = getOptionSchool('radar');
+	var seriesValue = [];
+	var seriesValue1 = [];
+	var legend = [];
+	legend[0] = '校超越率';
+	legend[1] = '区超越率';
+	//设置值
+	var maxScale = json[0].schoolRank;
+	for (var i = 0; i < json.length; i++) {
+		//最大刻度
+		if (json[i].schoolRank > maxScale) {
+			maxScale = json[i].schoolRank;
+		}
+		if (json[i].areaRank > maxScale) {
+			maxScale = json[i].areaRank;
+		}
+	}
+
+	for (var i = 0; i < json.length; i++) {
+		var text = json[i].subjectName;
+		//var max=json[i].fullScore;
+		var obj = new indicator(text, Math.ceil(maxScale) + 10);
+		radarChartOption.radar[0]['indicator'][i] = obj;
+		seriesValue[i] = json[i].schoolRank;
+		seriesValue1[i] = json[i].areaRank;
+	}
+	radarChartOption.series[0]['data'][0]['value'] = seriesValue;
+	radarChartOption.series[0]['data'][0]['name'] = '校超越率';
+	radarChartOption.series[0]['data'][1]['value'] = seriesValue1;
+	radarChartOption.series[0]['data'][1]['name'] = '区超越率';
+	radarChartOption.legend.data = legend;
+	var radarChart = echarts.init(byId('radarChart'));
+	radarChart.setOption(radarChartOption);
+}
+/*3.1--学科均衡性*/
+function percentageOnlyXiao(json) {
+
+	var radarChartOption = getOptionSchool('radar1');
+	var seriesValue = [];
+	var legend = [];
+	legend[0] = '校超越率';
+	//设置值
+	var maxScale = json[0].schoolRank;
+	for (var i = 0; i < json.length; i++) {
+		//最大刻度
+		if (json[i].schoolRank > maxScale) {
+			maxScale = json[i].schoolRank;
+		}
+	}
+	for (var i = 0; i < json.length; i++) {
+		var text = json[i].subjectName;
+		//var max=json[i].fullScore;
+		var obj = new indicator(text, Math.ceil(maxScale) + 10);
+		radarChartOption.radar[0]['indicator'][i] = obj;
+		seriesValue[i] = json[i].schoolRank;
+	}
+
+	radarChartOption.series[0]['data'][0]['value'] = seriesValue;
+	radarChartOption.series[0]['data'][0]['name'] = '校超越率';
+	radarChartOption.legend.data = legend;
+	var radarChart = echarts.init(byId('radarChart'));
+	radarChart.setOption(radarChartOption);
+}
+
+function indicator(text, max) {
+	this.text = text;
+	this.max = max;
+}
+/*4--学生成绩对比（班）*/
+function scoreContrastClass(json) {
+	if (plus.storage.getItem("classAverage") == "1") {
+		var lineChartClassOption = getOptionSchool('line');
+		var xAxisValue = [];
+		var seriesValue = [];
+		var seriesValue1 = [];
+		var seriesValue2 = [];
+		var legend = [];
+		legend[0] = '本人原始分';
+		legend[1] = '班级平均分';
+		legend[2] = '班级最高分';
+		//设置值
+		for (var i = 0; i < json.length; i++) {
+			if(i==0){
+				if(json[i].studentReportShowItem=='2'){
+					lineChartClassOption.yAxis[0].name = '(百分等级)';
+					legend[0] = '本人百分等级';
+					legend[1] = '班级平均百分等级';
+					legend[2] = '班级最高百分等级';
+				}else if(json[i].studentReportShowItem=='1'){
+					lineChartClassOption.yAxis[0].name = '(正确率%)';
+					legend[0] = '本人正确率';
+					legend[1] = '班级平均正确率';
+					legend[2] = '班级最高正确率';
+				}
+			}
+			xAxisValue[i] = json[i].subjectName;
+			if(json[i].studentReportShowItem=='2'){
+				seriesValue[i] = json[i].areaRank;
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = json[i].classAverageBaifendengji_q;
+					seriesValue2[i] = json[i].classMaxBaifendengji_q;
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}else if(json[i].studentReportShowItem=='1'){
+				seriesValue[i] = (json[i].totalScore/json[i].fullScore*100).toFixed(2);
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = (json[i].classAverage/json[i].fullScore*100).toFixed(2);
+					seriesValue2[i] = (json[i].classMax/json[i].fullScore*100).toFixed(2);
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}else{
+				seriesValue[i] = json[i].totalScore;
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = json[i].classAverage;
+					seriesValue2[i] = json[i].classMax;
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}
+		}
+		lineChartClassOption.xAxis[0]['data'] = xAxisValue;
+		lineChartClassOption.series[0]['data'] = seriesValue;
+		lineChartClassOption.series[0]['name'] = legend[0];
+		lineChartClassOption.series[1]['data'] = seriesValue1;
+		lineChartClassOption.series[1]['name'] = legend[1];
+		lineChartClassOption.series[2]['data'] = seriesValue2;
+		lineChartClassOption.series[2]['name'] = legend[2];
+		lineChartClassOption.legend.data = legend;
+		var lineChartClass = echarts.init(byId('lineChartClass'));
+		lineChartClass.setOption(lineChartClassOption);
+	} else {
+		var lineChartClassOption = getOptionSchool('line');
+		var xAxisValue = [];
+		var seriesValue = [];
+		var seriesValue2 = [];
+		var legend = [];
+		legend[0] = '本人原始分';
+		legend[1] = '班级最高分';
+		//设置值
+		for (var i = 0; i < json.length; i++) {
+			if(i==0){
+				if(json[i].studentReportShowItem=='2'){
+					lineChartClassOption.yAxis[0].name = '(百分等级)';
+					legend[0] = '本人百分等级';
+					legend[1] = '班级最高百分等级';
+				}else if(json[i].studentReportShowItem=='1'){
+					lineChartClassOption.yAxis[0].name = '(正确率%)';
+					legend[0] = '本人正确率';
+					legend[1] = '班级最高正确率';
+				}
+			}
+			xAxisValue[i] = json[i].subjectName;
+			if(json[i].studentReportShowItem=='2'){
+				seriesValue[i] = json[i].areaRank;
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = json[i].classMaxBaifendengji_q;
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}else if(json[i].studentReportShowItem=='1'){
+				seriesValue[i] = (json[i].totalScore/json[i].fullScore*100).toFixed(2);
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = (json[i].classMax/json[i].fullScore*100).toFixed(2);
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}else{
+				seriesValue[i] = json[i].totalScore;
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = json[i].classMax;
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}
+		}
+		lineChartClassOption.xAxis[0]['data'] = xAxisValue;
+		lineChartClassOption.series[0]['data'] = seriesValue;
+		lineChartClassOption.series[0]['name'] = legend[0];
+		lineChartClassOption.series[1]['data'] = seriesValue2;
+		lineChartClassOption.series[1]['name'] = legend[1];
+		lineChartClassOption.legend.data = legend;
+		var lineChartClass = echarts.init(byId('lineChartClass'));
+		lineChartClass.setOption(lineChartClassOption);
+	}
+
+}
+/*5--学生成绩对比（校）*/
+function scoreContrastGrade(json) {
+	if (plus.storage.getItem("gradeAverage") == "1") {
+		var lineChartGradeOption = getOptionSchool('line');
+		var xAxisValue = [];
+		var seriesValue = [];
+		var seriesValue1 = [];
+		var seriesValue2 = [];
+		var legend = [];
+		legend[0] = '本人原始分';
+		legend[1] = '年级平均分';
+		legend[2] = '年级最高分';
+		//设置值
+		for (var i = 0; i < json.length; i++) {
+			if(i==0){
+				if(json[i].studentReportShowItem=='2'){
+					lineChartGradeOption.yAxis[0].name = '(百分等级)';
+					legend[0] = '本人百分等级';
+					legend[1] = '年级平均百分等级';
+					legend[2] = '年级最高百分等级';
+				}else if(json[i].studentReportShowItem=='1'){
+					lineChartGradeOption.yAxis[0].name = '(正确率%)';
+					legend[0] = '本人正确率';
+					legend[1] = '年级平均正确率';
+					legend[2] = '年级最高正确率';
+				}
+			}
+			xAxisValue[i] = json[i].subjectName;
+			if(json[i].studentReportShowItem=='2'){
+				seriesValue[i] = json[i].areaRank;
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = json[i].gradeAverageBaifendengji;
+					seriesValue2[i] = json[i].gradeMaxBaifendengji;
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}else if(json[i].studentReportShowItem=='1'){
+				seriesValue[i] = (json[i].totalScore/json[i].fullScore*100).toFixed(2);
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = (json[i].gradeAverage/json[i].fullScore*100).toFixed(2);
+					seriesValue2[i] = (json[i].gradeMax/json[i].fullScore*100).toFixed(2);
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}else{
+				seriesValue[i] = json[i].totalScore;
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = json[i].gradeAverage;
+					seriesValue2[i] = json[i].gradeMax;
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}
+		}
+		lineChartGradeOption.xAxis[0]['data'] = xAxisValue;
+		lineChartGradeOption.series[0]['data'] = seriesValue;
+		lineChartGradeOption.series[0]['name'] = legend[0];
+		lineChartGradeOption.series[1]['data'] = seriesValue1;
+		lineChartGradeOption.series[1]['name'] = legend[1];
+		lineChartGradeOption.series[2]['data'] = seriesValue2;
+		lineChartGradeOption.series[2]['name'] = legend[2];
+		lineChartGradeOption.legend.data = legend;
+		var lineChartGrade = echarts.init(byId('lineChartGrade'));
+		lineChartGrade.setOption(lineChartGradeOption);
+	} else {
+		var lineChartGradeOption = getOptionSchool('line');
+		var xAxisValue = [];
+		var seriesValue = [];
+		var seriesValue2 = [];
+		var legend = [];
+		legend[0] = '本人原始分';
+		legend[1] = '年级最高分';
+		//设置值
+		for (var i = 0; i < json.length; i++) {
+			if(i==0){
+				if(json[i].studentReportShowItem=='2'){
+					lineChartGradeOption.yAxis[0].name = '(百分等级)';
+					legend[0] = '本人百分等级';
+					legend[1] = '年级最高百分等级';
+				}else if(json[i].studentReportShowItem=='1'){
+					lineChartGradeOption.yAxis[0].name = '(正确率%)';
+					legend[0] = '本人正确率';
+					legend[1] = '年级最高正确率';
+				}
+			}
+			xAxisValue[i] = json[i].subjectName;
+			if(json[i].studentReportShowItem=='2'){
+				seriesValue[i] = json[i].areaRank;
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = json[i].gradeMaxBaifendengji;
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}else if(json[i].studentReportShowItem=='1'){
+				seriesValue[i] = (json[i].totalScore/json[i].fullScore*100).toFixed(2);
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = (json[i].gradeMax/json[i].fullScore*100).toFixed(2);
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}else{
+				seriesValue[i] = json[i].totalScore;
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = json[i].gradeMax;
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}
+		}
+		lineChartGradeOption.xAxis[0]['data'] = xAxisValue;
+		lineChartGradeOption.series[0]['data'] = seriesValue;
+		lineChartGradeOption.series[0]['name'] = legend[0];
+		lineChartGradeOption.series[1]['data'] = seriesValue2;
+		lineChartGradeOption.series[1]['name'] = legend[1];
+		lineChartGradeOption.legend.data = legend;
+		var lineChartGrade = echarts.init(byId('lineChartGrade'));
+		lineChartGrade.setOption(lineChartGradeOption);
+	}
+
+}
+/*6--学生成绩对比（区）*/
+function scoreContrastArea(json) {
+	if (plus.storage.getItem("gradeAverage") == "1") {
+		var lineChartAreaOption = getOptionSchool('line');
+		var xAxisValue = [];
+		var seriesValue = [];
+		var seriesValue1 = [];
+		var seriesValue2 = [];
+		var legend = [];
+		legend[0] = '本人原始分';
+		legend[1] = '区域平均分';
+		legend[2] = '区域最高分';
+		//设置值
+		for (var i = 0; i < json.length; i++) {
+			if(i==0){
+				if(json[i].studentReportShowItem=='2'){
+					lineChartAreaOption.yAxis[0].name = '(百分等级)';
+					legend[0] = '本人百分等级';
+					legend[1] = '区域平均百分等级';
+					legend[2] = '区域最高百分等级';
+				}else if(json[i].studentReportShowItem=='1'){
+					lineChartAreaOption.yAxis[0].name = '(正确率%)';
+					legend[0] = '本人正确率';
+					legend[1] = '区域平均正确率';
+					legend[2] = '区域最高正确率';
+				}
+			}
+			xAxisValue[i] = json[i].subjectName;
+			if(json[i].studentReportShowItem=='2'){
+				seriesValue[i] = json[i].areaRank;
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = json[i].areaAvgBaifendengji;
+					seriesValue2[i] = json[i].areaMaxBaifendengji;
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+				console.log(seriesValue1[i]);
+			}else if(json[i].studentReportShowItem=='1'){
+				seriesValue[i] = (json[i].totalScore/json[i].fullScore*100).toFixed(2);
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = (json[i].areaAvg/json[i].fullScore*100).toFixed(2);
+					seriesValue2[i] = (json[i].areaMax/json[i].fullScore*100).toFixed(2);
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}else{
+				seriesValue[i] = json[i].totalScore;
+				if (null != json[i].totalScore) {
+					seriesValue1[i] = json[i].areaAvg;
+					seriesValue2[i] = json[i].areaMax;
+				} else { //提示的时候显示-
+					seriesValue1[i] = null;
+					seriesValue2[i] = null;
+				}
+			}
+		}
+		lineChartAreaOption.xAxis[0]['data'] = xAxisValue;
+		lineChartAreaOption.series[0]['data'] = seriesValue;
+		lineChartAreaOption.series[0]['name'] = legend[0];
+		lineChartAreaOption.series[1]['data'] = seriesValue1;
+		lineChartAreaOption.series[1]['name'] = legend[1];
+		lineChartAreaOption.series[2]['data'] = seriesValue2;
+		lineChartAreaOption.series[2]['name'] = legend[2];
+		lineChartAreaOption.legend.data = legend;
+		var lineChartArea = echarts.init(byId('lineChartArea'));
+		lineChartArea.setOption(lineChartAreaOption);
+	} else {
+		var lineChartAreaOption = getOptionSchool('line');
+		var xAxisValue = [];
+		var seriesValue = [];
+		var seriesValue1 = [];
+		var seriesValue2 = [];
+		var legend = [];
+		legend[0] = '本人原始分';
+		legend[1] = '区域最高分';
+		//设置值
+		for (var i = 0; i < json.length; i++) {
+			if(i==0){
+				if(json[i].studentReportShowItem=='2'){
+					lineChartAreaOption.yAxis[0].name = '(百分等级)';
+					legend[0] = '本人百分等级';
+					legend[1] = '区域最高百分等级';
+				}else if(json[i].studentReportShowItem=='1'){
+					lineChartAreaOption.yAxis[0].name = '(正确率%)';
+					legend[0] = '本人正确率';
+					legend[1] = '区域最高正确率';
+				}
+			}
+			xAxisValue[i] = json[i].subjectName;
+			if(json[i].studentReportShowItem=='2'){
+				seriesValue[i] = json[i].areaRank;
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = json[i].areaMaxBaifendengji;
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}else if(json[i].studentReportShowItem=='1'){
+				seriesValue[i] = (json[i].totalScore/json[i].fullScore*100).toFixed(2);
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = (json[i].areaMax/json[i].fullScore*100).toFixed(2);
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}else{
+				seriesValue[i] = json[i].totalScore;
+				if (null != json[i].totalScore) {
+					seriesValue2[i] = json[i].areaMax;
+				} else { //提示的时候显示-
+					seriesValue2[i] = null;
+				}
+			}
+		}
+		lineChartAreaOption.xAxis[0]['data'] = xAxisValue;
+		lineChartAreaOption.series[0]['data'] = seriesValue;
+		lineChartAreaOption.series[0]['name'] = legend[0];
+		lineChartAreaOption.series[1]['data'] = seriesValue2;
+		lineChartAreaOption.series[1]['name'] = legend[1];
+		lineChartAreaOption.legend.data = legend;
+		var lineChartArea = echarts.init(byId('lineChartArea'));
+		lineChartArea.setOption(lineChartAreaOption);
+	}
+
+}
+/*7--总分分段统计（班）*/
+/*var colorList=['#B4E04F','#B4E04F','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C',
+'#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C',
+'#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C','#FFA74C'];*/
+function scoreSectionClass(json, xAxisValue, seriesValue) {
+	var lineChartTotalCLassOption = getOptionSchool('bar1');
+	var legend = ['班分段统计'];
+	//colorList[json[3][0][0]]="#FF0000";
+	lineChartTotalCLassOption.legend.data = legend;
+	lineChartTotalCLassOption.color[0] = '#B4E04F';
+	lineChartTotalCLassOption.xAxis[0]['data'] = xAxisValue[0];
+	lineChartTotalCLassOption.series[0]['data'] = seriesValue[0];
+	lineChartTotalCLassOption.series[0]['name'] = "班分段统计";
+	lineChartTotalCLassOption.series[0]['markPoint'].data[0]['xAxis'] = json[3][0][0];
+	lineChartTotalCLassOption.series[0]['markPoint'].data[0]['yAxis'] = json[3][0][1];
+	lineChartTotalCLassOption.series[0]['markPoint'].data[0]['value'] = json[3][0][2];
+	var lineChartTotalCLass = echarts.init(byId('lineChartTotalCLass'));
+	lineChartTotalCLass.setOption(lineChartTotalCLassOption);
+	$("#lineChartTotalCLass+div span").html(json[0][0][10]); //colorList[json[3][0][0]]="#FFA74C";
+}
+/*8--总分分段统计（校）*/
+function scoreSectionGrade(json, xAxisValue, seriesValue) {
+	var lineChartTotalGradeOption = getOptionSchool('bar1');
+	var legend = ['校分段统计'];
+	//colorList[json[3][1][0]]="#FF0000";
+	lineChartTotalGradeOption.legend.data = legend;
+	lineChartTotalGradeOption.color[0] = '#C3E0FE';
+	lineChartTotalGradeOption.xAxis[0]['data'] = xAxisValue[1];
+	lineChartTotalGradeOption.series[0]['data'] = seriesValue[1];
+	lineChartTotalGradeOption.series[0]['name'] = "校分段统计";
+	lineChartTotalGradeOption.series[0]['markPoint'].data[0]['xAxis'] = json[3][1][0];
+	lineChartTotalGradeOption.series[0]['markPoint'].data[0]['yAxis'] = json[3][1][1];
+	lineChartTotalGradeOption.series[0]['markPoint'].data[0]['value'] = json[3][1][2];
+	var lineChartTotalGrade = echarts.init(byId('lineChartTotalGrade'));
+	lineChartTotalGrade.setOption(lineChartTotalGradeOption);
+	$("#lineChartTotalGrade+div span").html(json[1][0][10]); //colorList[json[3][1][0]]="#FFA74C";
+}
+/*9-总分分段统计（区）*/
+function scoreSectionArea(json, xAxisValue, seriesValue) {
+	var lineChartTotalAreaOption = getOptionSchool('bar1');
+	var legend = ['区分段统计'];
+	//colorList[json[3][2][0]]="#FF0000";
+	lineChartTotalAreaOption.legend.data = legend;
+	lineChartTotalAreaOption.color[0] = '#FF9132';
+	lineChartTotalAreaOption.xAxis[0]['data'] = xAxisValue[2];
+	lineChartTotalAreaOption.series[0]['data'] = seriesValue[2];
+	lineChartTotalAreaOption.series[0]['name'] = "区分段统计";
+	lineChartTotalAreaOption.series[0]['markPoint'].data[0]['xAxis'] = json[3][2][0];
+	lineChartTotalAreaOption.series[0]['markPoint'].data[0]['yAxis'] = json[3][2][1];
+	lineChartTotalAreaOption.series[0]['markPoint'].data[0]['value'] = json[3][2][2];
+	var lineChartTotalArea = echarts.init(byId('lineChartTotalArea'));
+	lineChartTotalArea.setOption(lineChartTotalAreaOption);
+	$("#lineChartTotalArea+div span").html(json[2][0][10]); //colorList[json[3][2][0]]="#FFA74C";
+}
+
+function compare(value1, value2) {
+	return value1 - value2;
+}
+/*10.个人多次考试成绩变化趋势-标准分（校）*/
+function moreExamGrade(json) {
+	var legend = new Array();
+	var xAxis = new Array();
+	var lineChartChangeGradeOption = getOptionSchool('line2');
+	// console.log(JSON.stringify(json));
+	var tempSjtName = new Array();
+	var jsonObj = {};
+
+	//把所有的科目筛选出来
+	for (var i = 0; i < json.length; i++) {
+		for (var j = 0; j < json[i][1].length; j++) {
+			if (tempSjtName.indexOf(json[i][0][j].orderNum) == -1) {
+				var orderNum = json[i][0][j].orderNum;
+				jsonObj[orderNum] = json[i][0][j].subjectName;
+			}
+		}
+	}
+
+	var a = [];
+	$.each(jsonObj, function(key, val) {
+		a[a.length] = key;
+	});
+	a.sort(compare);
+	$.each(a, function(i, key) {
+		tempSjtName[i] = jsonObj[key];
+	});
+
+	//科目设置
+	for (var i = 0; i < tempSjtName.length; i++) {
+		legend[i] = tempSjtName[i];
+		lineChartChangeGradeOption.series[i]['name'] = tempSjtName[i];
+	}
+	lineChartChangeGradeOption.legend.data = legend;
+
+	var maxDistance = 0;
+
+	//x坐标显示
+	for (var i = 0; i < json.length; i++) {
+		// xAxis[i]=json[i][1][i].ext2;
+		xAxis[i] = json[i][1][0].num;
+		//横坐标距离底部文字的距离
+		// if(Math.ceil(xAxis[i].length / 4)*15>maxDistance){
+		// 	maxDistance=Math.ceil(xAxis[i].length / 4)*(0.12*2*nowwidth);
+		// }
+	}
+	// lineChartChangeGradeOption.grid[0].bottom=maxDistance;
+	lineChartChangeGradeOption.xAxis[0]['data'] = xAxis;
+	//折现点的显示
+	var examNameStr = "";
+	for (var j = 0; j < json.length; j++) {
+		var a = 0;
+		for (var i = 0; i < tempSjtName.length; i++) {
+			if (json[j][0][a] != undefined) {
+				if (tempSjtName[i] == json[j][0][a].subjectName) {
+					lineChartChangeGradeOption.series[i]['data'][j] = json[j][1][a].standardScore;
+					a++;
+				}
+			}
+		}
+		examNameStr += json[j][1][0].num + "：" + json[j][1][0].ext2 + "<br/>";
+	}
+	$(".examNamelist").html(examNameStr);
+	var lineChartChangeGrade = echarts.init(byId('lineChartChangeGradeOption'));
+	lineChartChangeGrade.setOption(lineChartChangeGradeOption);
+}
+
+//11.个人多次考试成绩变化趋势-标准分（区）
+function moreExamArea(json) {
+	var legend = new Array();
+	var xAxis = new Array();
+	var lineChartChangeAreaOption = getOptionSchool('line2');
+
+	var tempSjtName = new Array();
+	var jsonObj = {};
+
+	//把所有的科目筛选出来
+	for (var i = 0; i < json.length; i++) {
+		for (var j = 0; j < json[i][1].length; j++) {
+			if (tempSjtName.indexOf(json[i][0][j].orderNum) == -1) {
+				var orderNum = json[i][0][j].orderNum;
+				jsonObj[orderNum] = json[i][0][j].subjectName;
+			}
+		}
+	}
+	var a = [];
+	$.each(jsonObj, function(key, val) {
+		a[a.length] = key;
+	});
+	a.sort(compare);
+	$.each(a, function(i, key) {
+		tempSjtName[i] = jsonObj[key];
+	});
+	//科目设置
+	for (var i = 0; i < tempSjtName.length; i++) {
+		legend[i] = tempSjtName[i];
+		lineChartChangeAreaOption.series[i]['name'] = tempSjtName[i];
+	}
+	lineChartChangeAreaOption.legend.data = legend;
+	var maxDistance = 0;
+	//x坐标显示
+	for (var i = 0; i < json.length; i++) {
+		xAxis[i] = json[i][1][0].num;
+		//横坐标距离底部文字的距离
+		// if(Math.ceil(xAxis[i].length / 4)*15>maxDistance){
+		// 	maxDistance=Math.ceil(xAxis[i].length / 4)*15;
+		// }
+	}
+	// lineChartChangeAreaOption.grid.y2=maxDistance;
+	lineChartChangeAreaOption.xAxis[0]['data'] = xAxis;
+	var examNameStr = "";
+	//折现点的显示
+	for (var j = 0; j < json.length; j++) {
+		var a = 0;
+		for (var i = 0; i < tempSjtName.length; i++) {
+			if (json[j][0][a] != undefined) {
+				if (tempSjtName[i] == json[j][0][a].subjectName) {
+					lineChartChangeAreaOption.series[i]['data'][j] = json[j][1][a].standardScore_q;
+					a++;
+				}
+			}
+		}
+		examNameStr += json[j][1][0].num + "：" + json[j][1][0].ext2 + "<br/>";
+	}
+	$(".examNamelist").html(examNameStr);
+	var lineChartChangeArea = echarts.init(byId('lineChartChangeAreaOption'));
+	lineChartChangeArea.setOption(lineChartChangeAreaOption);
+}
+
+
+function color(params) {
+	return colorList[params.dataIndex]
+}
+
+
+function changeAllSubjectTitle(studentReportShowType){
+	switch(studentReportShowType){
+		case '0':
+			$('#allSubjectTitle').html('总分一分一段表');
+		break;
+		case '1':
+			$('#allSubjectTitle').html('全科正确率分布');
+		break;
+		case '2':
+			$('#allSubjectTitle').html('全科等级分布');
+		break;
+	}
+}
