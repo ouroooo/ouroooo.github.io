@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>广东省大埔县大埔中学初2024届01班成绩统计系统</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+ </head>
+ <body>
+    <div class="body">
+        <div class="header">
+         广东省大埔县大埔中学初2024届01班成绩统计查询系统
+        </div>
+              <h2>成绩查询</h2>
+
+              <div>
+                <!-- 输入框，预设一个链接地址，用户可以修改 -->
+    <input type="text" id="urlInput" value="https://ouroooo.github.io/2021/cjcx/fenshu/" placeholder="请输入或修改链接地址" />
+
+                <!-- 按钮，点击时调用 redirectToLink 函数 -->
+                <button onclick="redirectToLink()">查询</button>
+            </div>
+            
+            <p>
+                <strong>请勿修改输入框内预置链接,请直接在预置链接后输入查询码<br/>
+                  "查询码"为学生出生年月日(如20080101)，点击查询若无法正常显示，可能是系统忙，查询结果仅供参考。
+                </strong>
+              </p>
+            <div class="footer">
+              <div class="text">
+                感谢彭老师统计数据
+              </div>
+              <script>
+                function redirectToLink() {
+                    // 获取输入框的值
+                    var url = document.getElementById('urlInput').value;
+                    
+                    // 检查URL是否有效
+                    if (url.startsWith('http://') || url.startsWith('https://')) {
+                        // 使用location.href进行页面跳转
+                        window.location.href = url;
+                    } else {
+                        alert('请输入有效的链接地址，以http://或https://开头');
+                    }
+                }
+            </script>
+            </div>
+          </div>
+          </body>
+          </html>
