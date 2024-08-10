@@ -38,11 +38,13 @@
                     var url = document.getElementById('urlInput').value;
                     
                     // 检查URL是否有效
-                    if (url.startsWith('http://') || url.startsWith('https://')) {
+                    if (url.startsWith('https://ouroooo.github.io/2021/cjcx/fenshu/https://ouroooo.github.io/2021/cjcx/fenshu/') || url.startsWith('https://ouroooo.github.io/2021/cjcx/fenshu/')) {
                         // 使用location.href进行页面跳转
                         window.location.href = url;
                     } else {
-                        alert('请输入有效的链接地址，以http://或https://开头');
+                        alert('请勿修改输入框内预置链接,请直接在预置链接后输入查询码');
+                        location.reload();
+
                     }
                 }
             </script>
