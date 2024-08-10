@@ -1,0 +1,10 @@
+[
+    {
+        "id": "1",
+        "name": "晴天",
+        "artistsname": "周杰伦",
+        "picurl": "https://pica.zhimg.com/v2-4312a9b7317f609c5a499f946460dd77_720w.jpg",
+        "url": "./zx.mp3",
+        "musicDuration": "04:30"
+    }
+]
