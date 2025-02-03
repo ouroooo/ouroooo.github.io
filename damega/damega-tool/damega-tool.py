@@ -83,7 +83,7 @@ def output_quanxiao(url, fixed_params):
     print(f"已打开浏览器，跳转到: {full_url}")
 
 # 示例用法
-base_url = "http://14.18.102.167:17001/edei/g6!g6export.action?&studentType=0&step=10&mingcistep=100&topStep=&E5step=null&B3mingcistep=null&type=0&sNum=6000&c_exam=&rpt_name=A2-%E5%85%A8%E7%A7%91%E6%88%90%E7%BB%A9&source=0&isHistory=F&isMoreSchool=F&rate=50&islevelclass=F&expTagType=null&reCalcu=F&fufen=0&subCompose=0&islevel=0&rptTitle=去疾ttkx&sch=&subRank=-1&downRank=0&scoreName=1&shouxuanHide=0&isShowSubCompose=0"
+base_url1 = "http://14.18.102.167:17001/edei/g6!g6export.action?&studentType=0&step=10&mingcistep=100&topStep=&E5step=null&B3mingcistep=null&type=0&sNum=6000&c_exam=&rpt_name=A2-%E5%85%A8%E7%A7%91%E6%88%90%E7%BB%A9&source=0&isHistory=F&isMoreSchool=F&rate=50&islevelclass=F&expTagType=null&reCalcu=F&fufen=0&subCompose=0&islevel=0&rptTitle=去疾ttkx&sch=&subRank=-1&downRank=0&scoreName=1&shouxuanHide=0&isShowSubCompose=0"
 fixed_params1 = ["examNum", "gradeNum", "schoolNum"]  # 固定的参数名列表
 while quji<1314:
       print("欢迎使用达美嘉工具\n如有疑问请联系ouroooo@163.com\n上次更新时间:2025/02/01\n工具更新地址https://ouroooo.github.io/damega")
@@ -101,7 +101,7 @@ while quji<1314:
       elif user_input == "4":
         get_schoolid()
       elif user_input == "5":
-        output_quanxiao(base_url, fixed_params)
+        output_quanxiao(base_url1, fixed_params1)
         time.sleep(3)
         clear_terminal()  # 调用函数清理终端屏幕
       elif user_input == "6":
