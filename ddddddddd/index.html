@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html> 
+
+    <head> 
+        <meta charset="UTF-8"> 
+
+    <title>鎴戣鍘屼綘</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+     <style> 
+ 
+body{text-align:center;background-color:black;color:white}
+a{color:white}
+.fm{background-color:rgba(0,0,0,0.57)}
+	     a{background-color:rgba(0,0,0,0.57);color:white}
+	      h2{background-color:rgba(0,0,0,0.57);color:white}
+	       h3{background-color:rgba(0,0,0,0.57);color:white}
+	        h1{background-color:rgba(0,0,0,0.57);color:white}
+	     h6{background-color:rgba(0,0,0,0.57);color:white}
+	     h4{background-color:rgba(0,0,0,0.57);color:white}
+	     h5{background-color:rgba(0,0,0,0.57);color:white}
+                       .hua{color:#555555}
+                                   .anu{height:25px;width:100px;background-color:#fff;border-color:#fff}
+	     span{background-color:rgba(0,0,0,0.57);color:white}
+     
+     </style> 
+ 
+    </head>
+  <body>
+      <div class="custom"> 
+
+				<div class="box"> <font><span id="runtime_span"></span> <script type="text/javascript">
+
+							function show_runtime(){
+
+								window.setTimeout("show_runtime()", 1000);
+
+								X = new								Date("@10/27/2024 08:45:00");
+
+								Y = new Date();
+
+								T = (Y.getTime() - X.getTime());
+
+								M = 24 * 60 * 60 * 1000;
+
+								a = T / M;
+
+								A = Math.floor(a);
+
+								b = (a - A) * 24;
+
+								B = Math.floor(b);
+
+								c = (b - B) * 60;
+
+								C = Math.floor((b - B) * 60);
+
+								D = Math.floor((c - C) * 60);
+
+							runtime_span.innerHTML ="鎴戣�屼綘: " + A + "澶�" + B + "灏忔椂" + C + "鍒�" + D + "绉�"}
+
+							show_runtime();
+
+						</script> <span id="span_dt"></span> </font> 
+
+				</div> 
+
+			</div> 
+
+    </body>
+</html>
+
+
+   
+  
